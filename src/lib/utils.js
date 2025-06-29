@@ -1,7 +1,7 @@
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-// Gabungkan kelas Tailwind CSS dengan clsx dan tailwind-merge
+// Gabungkan Tailwind CSS dengan clsx dan tailwind-merge
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }

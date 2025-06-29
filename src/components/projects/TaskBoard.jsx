@@ -5,8 +5,11 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { groupTasksByStatus } from '@/lib/utils';
 import { TaskCard } from './TaskCard';
 import { TaskDetailModal } from './TaskDetailModal';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ClipboardList, Loader2, CheckCircle2 } from 'lucide-react';
 
-// Wrapper Droppable untuk strict-mode safety
 function StrictModeDroppable(props) {
   const [enabled, setEnabled] = useState(false);
 
@@ -25,17 +28,18 @@ export function TaskBoard({
   projectId,
   projectMembers,
   onUpdateTask,
-  onDeleteTask
+  onDeleteTask,
 }) {
   const [selectedTask, setSelectedTask] = useState(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
+  // Status + label + icon
   const statuses = ['todo', 'in-progress', 'done'];
   const statusLabels = {
-    todo: 'To Do',
-    'in-progress': 'In Progress',
-    done: 'Done'
+    todo: { label: 'Belum Dikerjakan', icon: ClipboardList, badge: 'gray' },
+    'in-progress': { label: 'Sedang Berjalan', icon: Loader2, badge: 'blue' },
+    done: { label: 'Selesai', icon: CheckCircle2, badge: 'green' },
   };
 
   // State lokal untuk immediate reorder
@@ -44,7 +48,7 @@ export function TaskBoard({
   // Sync saat props.tasks berubah
   useEffect(() => {
     const grouped = groupTasksByStatus(tasks);
-    statuses.forEach(s => {
+    statuses.forEach((s) => {
       if (!grouped[s]) grouped[s] = [];
     });
     setLocalTasksByStatus(grouped);
@@ -62,7 +66,8 @@ export function TaskBoard({
     if (
       destination.droppableId === source.droppableId &&
       destination.index === source.index
-    ) return;
+    )
+      return;
 
     // Reorder di UI lokal
     const updated = { ...localTasksByStatus };
@@ -100,23 +105,32 @@ export function TaskBoard({
   if (!isMounted) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {statuses.map(status => (
-          <div key={status} className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                {statusLabels[status]}
-              </h3>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                0
-              </span>
-            </div>
-            <div className="space-y-3 min-h-[200px]">
-              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
-              </div>
-            </div>
-          </div>
-        ))}
+        {statuses.map((status) => {
+          const Icon = statusLabels[status].icon;
+          return (
+            <Card key={status} className="min-h-[320px] flex flex-col">
+              <CardHeader className="flex flex-row items-center justify-between px-4 py-3 border-b bg-muted/40 dark:bg-slate-900/40">
+                <div className="flex items-center gap-2">
+                  <Icon className="w-5 h-5 text-muted-foreground" />
+                  <CardTitle className="text-base font-semibold text-foreground">
+                    {statusLabels[status].label}
+                  </CardTitle>
+                </div>
+                <Badge variant="outline" className="text-xs font-semibold px-2 py-0.5">
+                  0
+                </Badge>
+              </CardHeader>
+              <CardContent className="flex-1 flex flex-col justify-center items-center gap-2">
+                <Skeleton className="w-full h-24 rounded-lg" />
+                <div className="flex gap-2 mt-2">
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     );
   }
@@ -125,75 +139,100 @@ export function TaskBoard({
     <>
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {statuses.map(status => (
-            <div
-              key={status}
-              className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                  {statusLabels[status]}
-                </h3>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                  {localTasksByStatus[status]?.length || 0}
-                </span>
-              </div>
+          {statuses.map((status) => {
+            const Icon = statusLabels[status].icon;
+            const badgeColor =
+              status === 'todo'
+                ? 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+                : status === 'in-progress'
+                ? 'bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-300'
+                : 'bg-green-200 dark:bg-green-900 text-green-800 dark:text-green-300';
 
-              <StrictModeDroppable
-                droppableId={status}
-                type="TASK"
-                isDropDisabled={false}
-                isCombineEnabled={false}
-                ignoreContainerClipping={false}
-              >
-                {(provided, snapshot) => (
-                  <div
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    className={`space-y-3 min-h-[200px] ${
-                      snapshot.isDraggingOver
-                        ? 'bg-blue-50 dark:bg-blue-900/20'
-                        : ''
-                    }`}
-                  >
-                    {localTasksByStatus[status].map((task, index) => (
-                      <Draggable
-                        key={task.id.toString()}
-                        draggableId={task.id.toString()}
-                        index={index}
-                      >
-                        {(prov, snap) => (
-                          <div
-                            ref={prov.innerRef}
-                            {...prov.draggableProps}
-                            {...prov.dragHandleProps}
-                            onClick={() => handleTaskClick(task)}
-                            className={snap.isDragging ? 'opacity-70' : ''}
-                          >
-                            <TaskCard
-                              task={task}
-                              projectMembers={projectMembers}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-
-                    {provided.placeholder}
-
-                    {localTasksByStatus[status].length === 0 &&
-                      !snapshot.isDraggingOver && (
-                        <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center">
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            No tasks in this column
-                          </p>
-                        </div>
-                      )}
+            return (
+              <Card key={status} className="min-h-[320px] flex flex-col">
+                <CardHeader className="flex flex-row items-center justify-between px-4 py-3 border-b bg-muted/40 dark:bg-slate-900/40">
+                  <div className="flex items-center gap-2">
+                    <Icon
+                      className={`w-5 h-5 ${
+                        status === 'todo'
+                          ? 'text-gray-400'
+                          : status === 'in-progress'
+                          ? 'text-blue-500 animate-spin'
+                          : 'text-green-500'
+                      }`}
+                    />
+                    <CardTitle className="text-base font-semibold text-foreground">
+                      {statusLabels[status].label}
+                    </CardTitle>
                   </div>
-                )}
-              </StrictModeDroppable>
-            </div>
-          ))}
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium  ${badgeColor}`}
+                  >
+                    {localTasksByStatus[status]?.length || 0}
+                  </span>
+                </CardHeader>
+                <CardContent className="flex-1 pt-3">
+                  <StrictModeDroppable
+                    droppableId={status}
+                    type="TASK"
+                    isDropDisabled={false}
+                    isCombineEnabled={false}
+                    ignoreContainerClipping={false}
+                  >
+                    {(provided, snapshot) => (
+                      <div
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
+                        className={`space-y-3 min-h-[210px] transition-colors ${
+                          snapshot.isDraggingOver
+                            ? 'bg-primary/10 dark:bg-primary/20'
+                            : ''
+                        } px-0 py-1 rounded-lg`}
+                      >
+                        {localTasksByStatus[status].map((task, index) => (
+                          <Draggable
+                            key={`${status}-${task.id}-${index}`}
+                            draggableId={`${status}-${task.id}-${index}`}
+                            index={index}
+                          >
+                            {(prov, snap) => (
+                              <div
+                                ref={prov.innerRef}
+                                {...prov.draggableProps}
+                                {...prov.dragHandleProps}
+                                onClick={() => handleTaskClick(task)}
+                                className={`transition-shadow ${
+                                  snap.isDragging
+                                    ? 'shadow-lg ring-2 ring-primary/30 opacity-80 scale-[0.98]'
+                                    : ''
+                                }`}
+                              >
+                                <TaskCard
+                                  task={task}
+                                  projectMembers={projectMembers}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+
+                        {provided.placeholder}
+
+                        {localTasksByStatus[status].length === 0 &&
+                          !snapshot.isDraggingOver && (
+                            <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg p-4 text-center">
+                              <p className="text-sm text-muted-foreground">
+                                Tidak ada tugas di kolom ini
+                              </p>
+                            </div>
+                          )}
+                      </div>
+                    )}
+                  </StrictModeDroppable>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       </DragDropContext>
 

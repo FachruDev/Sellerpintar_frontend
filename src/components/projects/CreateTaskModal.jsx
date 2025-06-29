@@ -1,15 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { ListPlus, Loader2, ChevronDown } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function CreateTaskModal({
   isOpen,
   onClose,
   onSubmit,
-  projectMembers
+  projectMembers,
 }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -18,165 +22,160 @@ export function CreateTaskModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const statusOptions = [
-    { value: 'todo', label: 'To Do' },
-    { value: 'in-progress', label: 'In Progress' },
-    { value: 'done', label: 'Done' }
+    { value: 'todo', label: 'Belum Dikerjakan' },
+    { value: 'in-progress', label: 'Sedang Berjalan' },
+    { value: 'done', label: 'Selesai' },
   ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) {
-      alert('Task title is required');
+      alert('Judul tugas wajib diisi!');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      // Bangun payload, omit assigneeId jika kosong
       const payload = {
         title: title.trim(),
         description: description.trim(),
         status,
-        ...(assigneeId && { assigneeId })
+        ...(assigneeId && { assigneeId }),
       };
 
-      console.log('Creating task with payload:', payload);
       await onSubmit(payload);
 
-      // reset form
       setTitle('');
       setDescription('');
       setStatus('todo');
       setAssigneeId('');
       onClose();
     } catch (err) {
-      console.error('Error creating task:', err);
-      alert(`Failed to create task: ${err.message || err}`);
+      alert(`Gagal membuat tugas: ${err.message || err}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={onClose}
-      ></div>
-
-      {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div
-          className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md overflow-hidden shadow-xl"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <form onSubmit={handleSubmit}>
-            <div className="p-6">
-              <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-                Create New Task
-              </h3>
-
-              {/* Title */}
-              <div className="mb-4">
-                <Label htmlFor="title" className="block text-sm font-medium mb-1">
-                  Title
-                </Label>
-                <Input
-                  id="title"
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  disabled={isSubmitting}
-                  required
-                  placeholder="Enter task title"
-                />
-              </div>
-
-              {/* Description */}
-              <div className="mb-4">
-                <Label htmlFor="description" className="block text-sm font-medium mb-1">
-                  Description
-                </Label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  disabled={isSubmitting}
-                  rows={4}
-                  className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="Enter task description (optional)"
-                />
-              </div>
-
-              {/* Status */}
-              <div className="mb-4">
-                <Label htmlFor="status" className="block text-sm font-medium mb-1">
-                  Status
-                </Label>
+    <Dialog open={isOpen} onOpenChange={(open) => !open ? onClose() : undefined}>
+      <DialogContent className="max-w-lg">
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 mb-3">
+              <ListPlus className="w-5 h-5 text-primary" />
+              Buat Tugas Baru
+            </DialogTitle>
+            <DialogDescription>
+              Lengkapi detail di bawah untuk menambah tugas ke proyek.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-3">
+            {/* Judul */}
+            <div>
+              <Label htmlFor="title">Judul Tugas</Label>
+              <Input
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                disabled={isSubmitting}
+                required
+                autoFocus
+                placeholder="Contoh: Riset fitur baru"
+              />
+            </div>
+            {/* Deskripsi */}
+            <div>
+              <Label htmlFor="description">Deskripsi</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={isSubmitting}
+                placeholder="Penjelasan tugas (opsional)"
+                rows={3}
+              />
+            </div>
+            {/* Status */}
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <div className="relative">
                 <select
                   id="status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   disabled={isSubmitting}
-                  className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className={cn(
+                    "peer w-full appearance-none rounded-md border bg-background px-3 py-2 pr-8 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50",
+                    "dark:bg-slate-900",
+                  )}
                 >
-                  {statusOptions.map(o => (
+                  {statusOptions.map((o) => (
                     <option key={o.value} value={o.value}>
                       {o.label}
                     </option>
                   ))}
                 </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
               </div>
-
-              {/* Assignee */}
-              <div className="mb-4">
-                <Label htmlFor="assignee" className="block text-sm font-medium mb-1">
-                  Assignee
-                </Label>
+            </div>
+            {/* Assignee */}
+            <div>
+              <Label htmlFor="assignee">Penanggung Jawab</Label>
+              <div className="relative">
                 <select
                   id="assignee"
                   value={assigneeId}
                   onChange={(e) => setAssigneeId(e.target.value)}
                   disabled={isSubmitting}
-                  className="w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  className={cn(
+                    "peer w-full appearance-none rounded-md border bg-background px-3 py-2 pr-8 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/50",
+                    "dark:bg-slate-900"
+                  )}
                 >
-                  <option value="">Unassigned</option>
-                  {projectMembers?.map(member => (
-                    <option
-                      key={member.user.id}
-                      value={member.user.id}
-                    >
+                  <option value="">Tidak Ditugaskan</option>
+                  {projectMembers?.map((member) => (
+                    <option key={member.user.id} value={member.user.id}>
                       {member.user.email}
                     </option>
                   ))}
                 </select>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
               </div>
             </div>
-
-            {/* Actions */}
-            <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 flex flex-row-reverse">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="ml-3 px-4 py-2 bg-blue-600 text-white"
-              >
-                {isSubmitting ? 'Creating...' : 'Create Task'}
-              </Button>
+          </div>
+          <DialogFooter className="flex flex-row-reverse gap-2 pt-2">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto"
+            >
+              {isSubmitting ? (
+                <span className="flex items-center gap-1">
+                  <Loader2 className="animate-spin h-4 w-4" />
+                  Membuat...
+                </span>
+              ) : (
+                <>
+                  <ListPlus className="w-4 h-4 mr-1" />
+                  Buat Tugas
+                </>
+              )}
+            </Button>
+            <DialogClose asChild>
               <Button
                 type="button"
+                variant="outline"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-4 py-2 bg-white dark:bg-gray-800 text-gray-700"
+                className="w-full sm:w-auto"
               >
-                Cancel
+                Batal
               </Button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </>
+            </DialogClose>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

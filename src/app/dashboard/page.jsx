@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { projectsAPI } from '@/lib/api';
 import { ProjectCard } from '@/components/dashboard/ProjectCard';
 import { CreateProjectButton } from '@/components/dashboard/CreateProjectButton';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Frown, AlertCircle } from 'lucide-react';
 
 export default function DashboardPage() {
   const [projects, setProjects] = useState([]);
@@ -18,8 +21,7 @@ export default function DashboardPage() {
         const response = await projectsAPI.getAllProjects();
         setProjects(response.projects || []);
       } catch (err) {
-        console.error('Error fetching projects:', err);
-        setError('Failed to load projects. Please try again later.');
+        setError('Gagal memuat daftar proyek. Silakan coba lagi nanti.');
       } finally {
         setLoading(false);
       }
@@ -29,12 +31,12 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
+    <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
       <div className="sm:flex sm:items-center sm:justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Projects</h1>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Manage your projects and tasks
+          <h1 className="text-2xl font-bold text-foreground">Daftar Proyek</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Kelola seluruh proyek dan tugas Anda di satu tempat.
           </p>
         </div>
         <div className="mt-4 sm:mt-0">
@@ -43,45 +45,27 @@ export default function DashboardPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-40 rounded-xl" />
+          ))}
         </div>
       ) : error ? (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md p-4 my-6">
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-red-700 dark:text-red-200">{error}</p>
-            </div>
-          </div>
-        </div>
+        <Alert variant="destructive" className="my-8">
+          <AlertCircle className="h-5 w-5 text-destructive shrink-0" />
+          <AlertTitle>Gagal Memuat</AlertTitle>
+          <AlertDescription>
+            {error}
+          </AlertDescription>
+        </Alert>
       ) : projects.length === 0 ? (
-        <div className="text-center py-12">
-          <svg
-            className="mx-auto h-12 w-12 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1}
-              d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
-            />
-          </svg>
-          <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-200">No projects</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Get started by creating a new project.
+        <div className="flex flex-col items-center justify-center gap-4 py-20">
+          <Frown className="h-12 w-12 text-muted-foreground" />
+          <h3 className="text-lg font-semibold text-foreground">Belum ada proyek</h3>
+          <p className="text-sm text-muted-foreground">
+            Mulai dengan membuat proyek baru terlebih dahulu.
           </p>
-          <div className="mt-6">
-            <CreateProjectButton />
-          </div>
+          <CreateProjectButton />
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -92,4 +76,4 @@ export default function DashboardPage() {
       )}
     </div>
   );
-} 
+}

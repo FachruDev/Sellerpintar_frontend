@@ -5,10 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { validateEmail, validatePassword } from '@/lib/utils';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/Card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { Mail, Lock, AlertCircle, LogIn } from 'lucide-react';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -20,97 +22,129 @@ export function LoginForm() {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!email) {
-      newErrors.email = 'Email is required';
+      newErrors.email = 'Email wajib diisi';
     } else if (!validateEmail(email)) {
-      newErrors.email = 'Please enter a valid email';
+      newErrors.email = 'Email tidak valid';
     }
-    
+
     if (!password) {
-      newErrors.password = 'Password is required';
+      newErrors.password = 'Password wajib diisi';
     } else if (!validatePassword(password)) {
-      newErrors.password = 'Password must be at least 6 characters';
+      newErrors.password = 'Password minimal 6 karakter';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
+
     try {
       setIsSubmitting(true);
       await login({ email, password });
-      window.location.href = '/dashboard';
+      router.push('/dashboard');
     } catch (error) {
-      setErrors({ form: error.message || 'Login failed. Please try again.' });
+      setErrors({ form: error.message || 'Login gagal. Silakan coba lagi.' });
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Login</CardTitle>
-        <CardDescription>
-          Enter your email and password to access your account
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={errors.email ? 'border-red-500' : ''}
-            />
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email}</p>
-            )}
+    <div className="flex items-center justify-center">
+      <Card className="w-full max-w-md shadow-xl border-0 relative overflow-hidden backdrop-blur-md bg-white/80 dark:bg-slate-900/70">
+        {/* Ornamen sudut */}
+        <div className="absolute -top-10 -left-10 w-36 h-36 bg-blue-500/20 rounded-full blur-2xl z-0"></div>
+        <div className="absolute -bottom-10 -right-10 w-36 h-36 bg-violet-400/20 rounded-full blur-2xl z-0"></div>
+        <CardHeader className="space-y-1 relative z-10">
+          <div className="flex items-center gap-2 justify-center mb-2">
+            <LogIn className="w-8 h-8 text-primary" />
+            <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+              Masuk
+            </CardTitle>
           </div>
-          <div className="space-y-2">
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={errors.password ? 'border-red-500' : ''}
-            />
-            {errors.password && (
-              <p className="text-sm text-red-500">{errors.password}</p>
-            )}
-          </div>
-          {errors.form && (
-            <div className="p-3 bg-red-100 border border-red-400 rounded text-red-700 text-sm">
-              {errors.form}
+          <CardDescription className="text-center">
+            Selamat datang kembali! Silakan masuk untuk melanjutkan.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="relative z-10">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="font-medium">
+                Email
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="nama@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`pl-10 ${errors.email ? 'border-destructive' : ''}`}
+                  autoComplete="email"
+                  disabled={isSubmitting}
+                  spellCheck={false}
+                />
+              </div>
+              {errors.email && (
+                <p className="text-xs text-destructive">{errors.email}</p>
+              )}
             </div>
-          )}
-          <Button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
-          </Button>
-        </form>
-      </CardContent>
-      <CardFooter className="flex justify-center">
-        <p className="text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link href="/register" className="text-blue-600 hover:text-blue-800 font-medium">
-            Sign up
-          </Link>
-        </p>
-      </CardFooter>
-    </Card>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="font-medium">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`pl-10 ${errors.password ? 'border-destructive' : ''}`}
+                  autoComplete="current-password"
+                  disabled={isSubmitting}
+                />
+              </div>
+              {errors.password && (
+                <p className="text-xs text-destructive">{errors.password}</p>
+              )}
+            </div>
+            {errors.form && (
+              <Alert variant="destructive" className="mt-2">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Gagal Masuk</AlertTitle>
+                <AlertDescription>{errors.form}</AlertDescription>
+              </Alert>
+            )}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isSubmitting}
+              size="lg"
+            >
+              {isSubmitting ? 'Sedang masuk...' : 'Masuk'}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex justify-center relative z-10">
+          <p className="text-sm text-muted-foreground">
+            Belum punya akun?{' '}
+            <Link
+              href="/register"
+              className="text-primary underline-offset-2 hover:underline font-semibold"
+            >
+              Daftar
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
+    </div>
   );
-} 
+}
