@@ -85,7 +85,7 @@ export const projectsAPI = {
   getAllProjects: async () => {
     try {
       const response = await api.get('/api/projects');
-      return response.data;
+      return { projects: response.data };
     } catch (error) {
       throw error.response?.data || { message: 'Failed to fetch projects' };
     }
@@ -151,7 +151,7 @@ export const tasksAPI = {
   createTask: async (projectId, taskData) => {
     try {
       const response = await api.post(`/api/projects/${projectId}/tasks`, taskData);
-      return response.data;
+      return response.data.task;
     } catch (error) {
       throw error.response?.data || { message: 'Failed to create task' };
     }
@@ -169,7 +169,7 @@ export const tasksAPI = {
   updateTask: async (projectId, taskId, taskData) => {
     try {
       const response = await api.put(`/api/projects/${projectId}/tasks/${taskId}`, taskData);
-      return response.data;
+      return response.data.task;
     } catch (error) {
       throw error.response?.data || { message: 'Failed to update task' };
     }
@@ -196,9 +196,9 @@ export const membersAPI = {
     }
   },
 
-  inviteMember: async (projectId, userId) => {
+  inviteMember: async (projectId, memberData) => {
     try {
-      const response = await api.post(`/api/projects/${projectId}/members`, { userId });
+      const response = await api.post(`/api/projects/${projectId}/members`, memberData);
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Failed to invite member' };
