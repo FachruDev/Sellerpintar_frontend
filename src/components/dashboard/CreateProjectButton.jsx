@@ -76,7 +76,7 @@ export function CreateProjectButton() {
           </DialogHeader>
           <div className="py-4 space-y-3">
             <div>
-              <Label htmlFor="projectName" className="mb-1">
+              <Label htmlFor="projectName" className="mb-2">
                 Nama Proyek
               </Label>
               <Input

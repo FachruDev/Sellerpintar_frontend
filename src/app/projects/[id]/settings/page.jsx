@@ -2,7 +2,7 @@
 
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
-import { projectsAPI, membersAPI, userAPI } from '@/lib/api';
+import { projectsAPI, membersAPI, userAPI, tasksAPI } from '@/lib/api';
 import { Card, CardHeader, CardTitle, CardContent, Button, Input, Label, Badge, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui-bundle';
 import { Loader2, UserRound, UserPlus, Trash2, Check, X, Search, Shield, ArrowLeft, Mail, Pencil } from 'lucide-react';
 import { Analytics } from "@vercel/analytics/next"
@@ -75,9 +75,20 @@ export default function ProjectSettingsPage({ params }) {
     try {
       setSearching(true);
       const results = await userAPI.searchUsers(searchTerm);
-      const existingIds = members.map((m) => m.user.id);
-      setSearchResults(results.filter((u) => !existingIds.includes(u.id)));
+      
+      // Ekstrak ID dari member
+      const existingIds = members.map((m) => {
+        // Cek berbagai kemungkinan struktur data
+        if (m.user && m.user.id) return m.user.id;
+        if (m.userId) return m.userId;
+        return m.id; // Fallback ke ID member kalo ga ada properti lain
+      }).filter(Boolean); // Filter undefined/null values
+      
+      // Filter hasil pencarian
+      const filteredResults = results.filter((u) => !existingIds.includes(u.id));
+      setSearchResults(filteredResults);
     } catch (err) {
+      console.error('Search error:', err);
       alert('Gagal mencari user.');
     } finally {
       setSearching(false);
@@ -88,7 +99,14 @@ export default function ProjectSettingsPage({ params }) {
   const handleInviteMember = async (userId) => {
     try {
       const res = await membersAPI.inviteMember(id, { userId });
-      setMembers((prev) => [...prev, res.membership]);
+      
+      // Periksa struktur data membership yang ditambahkan ke state biar sesuai
+      const newMember = res.membership || res;
+      
+      // Tambah member baru ke state
+      setMembers((prev) => [...prev, newMember]);
+      
+      // Hapus hasil pencarian + reset search term
       setSearchResults([]);
       setSearchTerm('');
     } catch (err) {
@@ -109,10 +127,30 @@ export default function ProjectSettingsPage({ params }) {
   // Delete proyek
   const handleDeleteProject = async () => {
     try {
+      // Periksa apakah proyek masih memiliki tasks
+      const tasks = await tasksAPI.getProjectTasks(id);
+      if (tasks && tasks.length > 0) {
+        alert('Proyek masih memiliki tugas. Hapus semua tugas terlebih dahulu sebelum menghapus proyek.');
+        return;
+      }
+      
+      // Periksa apakah proyek masih memiliki anggota selain owner
+      if (members.length > 1) {
+        alert('Proyek masih memiliki anggota. Hapus semua anggota terlebih dahulu sebelum menghapus proyek.');
+        return;
+      }
+      
+      // Coba hapus proyek
       await projectsAPI.deleteProject(id);
       router.push('/dashboard');
     } catch (err) {
-      alert('Gagal menghapus proyek.');
+      
+      // pesan error
+      if (err.message) {
+        alert(`Gagal menghapus proyek: ${err.message}`);
+      } else {
+        alert('Gagal menghapus proyek. Pastikan semua tugas dan anggota sudah dihapus terlebih dahulu.');
+      }
     }
   };
 

@@ -92,8 +92,7 @@ export default function ProjectPage({ params }) {
   // handle CRUD
   const handleTaskCreate = async (taskData) => {
     try {
-      const newTask = await tasksAPI.createTask(id, taskData);
-      setTasks((prev) => [...prev, newTask]);
+      await tasksAPI.createTask(id, taskData);
       setIsCreateModalOpen(false);
     } catch (err) {
       alert('Gagal membuat tugas. Silakan coba lagi.');
