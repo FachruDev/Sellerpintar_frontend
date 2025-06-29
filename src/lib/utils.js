@@ -80,7 +80,13 @@ export const getInitials = (name) => {
 
 // Kelompokkan task berdasarkan status
 export const groupTasksByStatus = (tasks) => {
+  if (!tasks || !Array.isArray(tasks)) {
+    return {};
+  }
+  
   return tasks.reduce((acc, task) => {
+    if (!task || !task.status) return acc;
+    
     if (!acc[task.status]) {
       acc[task.status] = [];
     }
