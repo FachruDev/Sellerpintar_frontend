@@ -7,6 +7,7 @@ import { CreateProjectButton } from '@/components/dashboard/CreateProjectButton'
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Frown, AlertCircle } from 'lucide-react';
+import { Analytics } from "@vercel/analytics/next"
 
 export default function DashboardPage() {
   const [projects, setProjects] = useState([]);
@@ -32,6 +33,7 @@ export default function DashboardPage() {
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+      <Analytics/>
       <div className="sm:flex sm:items-center sm:justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Daftar Proyek</h1>

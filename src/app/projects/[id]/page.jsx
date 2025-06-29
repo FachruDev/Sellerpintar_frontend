@@ -11,6 +11,7 @@ import { ProjectStats } from '@/components/projects/ProjectStats';
 import { initializeSocket } from '@/lib/socket';
 import { TaskBoard } from '@/components/projects/TaskBoard';
 import { Loader2, Settings, PlusCircle, Download, ArrowLeft } from 'lucide-react';
+import { Analytics } from "@vercel/analytics/next"
 
 export default function ProjectPage({ params }) {
   const router = useRouter();
@@ -155,6 +156,7 @@ export default function ProjectPage({ params }) {
 
   return (
     <div className="px-2 sm:px-6 lg:px-8 py-6 space-y-8 max-w-7xl mx-auto">
+      <Analytics/>
       <div className="flex items-center mb-4">
         <Link href="/dashboard">
         <Button variant="outline">

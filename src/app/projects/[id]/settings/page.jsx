@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { projectsAPI, membersAPI, userAPI } from '@/lib/api';
 import { Card, CardHeader, CardTitle, CardContent, Button, Input, Label, Badge, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui-bundle';
 import { Loader2, UserRound, UserPlus, Trash2, Check, X, Search, Shield, ArrowLeft, Mail, Pencil } from 'lucide-react';
+import { Analytics } from "@vercel/analytics/next"
 
 export default function ProjectSettingsPage({ params }) {
   const router = useRouter();
@@ -140,6 +141,7 @@ export default function ProjectSettingsPage({ params }) {
 
   return (
     <div className="px-2 sm:px-6 lg:px-8 py-6 space-y-8 max-w-3xl mx-auto">
+      <Analytics/>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
