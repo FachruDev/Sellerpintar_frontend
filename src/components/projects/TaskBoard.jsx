@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-  DragDropContext,
-  Droppable,
-  Draggable
-} from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { groupTasksByStatus } from '@/lib/utils';
 import { TaskCard } from './TaskCard';
 import { TaskDetailModal } from './TaskDetailModal';

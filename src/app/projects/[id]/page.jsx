@@ -10,15 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { CreateTaskModal } from '@/components/projects/CreateTaskModal';
 import { ProjectStats } from '@/components/projects/ProjectStats';
 import { initializeSocket } from '@/lib/socket';
-
-// Import TaskBoard dinamis untuk menghindari masalah SSR dengan react-beautiful-dnd
-const TaskBoard = dynamic(
-  () =>
-    import('@/components/projects/TaskBoard').then((mod) => ({
-      default: mod.TaskBoard
-    })),
-  { ssr: false }
-);
+import { TaskBoard } from '@/components/projects/TaskBoard';
 
 export default function ProjectPage({ params }) {
   const router = useRouter();
