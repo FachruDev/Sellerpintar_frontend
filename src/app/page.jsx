@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import { testAlias } from "@/lib/test-alias";
 
 export default function Home() {
   const { isAuthenticated, loading } = useAuth();
