@@ -1,5 +1,0 @@
-[install]
-production = false
-
-[install.cache]
-dir = ".bun" 
