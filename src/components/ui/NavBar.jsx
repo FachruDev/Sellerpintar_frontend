@@ -6,8 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { getInitials, stringToColor } from '@/lib/utils';
 import { LogOut, Menu, LayoutDashboard, UserCircle2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Button, Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui-bundle';
 import { cn } from '@/lib/utils';
 
 export function NavBar() {
