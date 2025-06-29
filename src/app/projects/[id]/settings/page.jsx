@@ -3,12 +3,7 @@
 import { useState, useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { projectsAPI, membersAPI, userAPI } from '@/lib/api';
-import {Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Card, CardHeader, CardTitle, CardContent, Button, Input, Label, Badge, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui-bundle';
 import { Loader2, UserRound, UserPlus, Trash2, Check, X, Search, Shield, ArrowLeft, Mail, Pencil } from 'lucide-react';
 
 export default function ProjectSettingsPage({ params }) {

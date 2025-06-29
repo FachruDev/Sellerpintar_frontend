@@ -2,5 +2,8 @@
   "buildCommand": "bun install && bun run build",
   "installCommand": "bun install",
   "framework": "nextjs",
-  "outputDirectory": ".next"
+  "outputDirectory": ".next",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
 } 

@@ -5,13 +5,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { projectsAPI, tasksAPI } from '@/lib/api';
 import { exportToJson } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { Button, Card, CardHeader, CardTitle, CardContent, Badge } from '@/components/ui-bundle';
 import { CreateTaskModal } from '@/components/projects/CreateTaskModal';
 import { ProjectStats } from '@/components/projects/ProjectStats';
 import { initializeSocket } from '@/lib/socket';
 import { TaskBoard } from '@/components/projects/TaskBoard';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Loader2, Settings, PlusCircle, Download, ArrowLeft } from 'lucide-react';
 
 export default function ProjectPage({ params }) {
