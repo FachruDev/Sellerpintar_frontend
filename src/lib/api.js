@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getCookie } from 'cookies-next';
 
 // Base URL API
-const API_URL = 'https://sellerpintar-backend.fachru.xyz';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sellerpintar-backend.fachru.xyz';
 
 // Buat instance axios dengan default config
 const api = axios.create({

@@ -10,7 +10,7 @@ export const initializeSocket = () => {
   // Ambil token dari cookie atau localStorage
   const token = getCookie('token') || localStorage.getItem('token');
 
-  socket = io('https://sellerpintar-backend.fachru.xyz', {
+  socket = io(process.env.NEXT_PUBLIC_SOCKET_URL || 'https://sellerpintar-backend.fachru.xyz', {
     auth: { token },
     withCredentials: true,
     autoConnect: true,
