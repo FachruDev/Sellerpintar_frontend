@@ -5,9 +5,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { groupTasksByStatus } from '@/lib/utils';
 import { TaskCard } from './TaskCard';
 import { TaskDetailModal } from './TaskDetailModal';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardHeader, CardTitle, CardContent, Badge, Skeleton } from '@/components/ui-bundle';
 import { ClipboardList, Loader2, CheckCircle2 } from 'lucide-react';
 
 function StrictModeDroppable(props) {

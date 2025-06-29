@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge, Card, CardContent, CardHeader, CardTitle } from '@/components/ui-bundle';
 import { formatRelativeTime, stringToColor } from '@/lib/utils';
 
 // Fungsi untuk mengambil inisial (1-2 huruf, dari nama atau email)

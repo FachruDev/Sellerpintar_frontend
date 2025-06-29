@@ -1,10 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
-import { Badge } from '@/components/ui/badge';
+import { Badge, Card, CardHeader, CardTitle, CardContent } from '@/components/ui-bundle';
 import { ClipboardList, Loader2, CheckCircle2, Clock } from 'lucide-react';
 
 ChartJS.register(ArcElement, Tooltip, Legend);

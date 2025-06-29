@@ -1,6 +1,6 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui-bundle';
 import { stringToColor } from '@/lib/utils';
 import { User, Loader2, CheckCircle2, Clock } from 'lucide-react';
 
